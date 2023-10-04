@@ -1,2 +1,19 @@
-  git config --global user.email "you@example.com"
+  git config --global user.email "<you@example.com>"
+  git config --global user.name "Your Name"g
+
+git init
+git add .
+// for the first time
+  git config --global user.email "<you@example.com>"
   git config --global user.name "Your Name"
+<!-- then -->
+git commit -m "first commit"
+
+git remote add origin <https://github.com/yaserdxb33/Calc_App_RF.git>
+
+git branch -M main
+
+git push -u origin main
+
+<!-- if the authentication does not work then -->
+git remote set-url origin https://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@github.com/noorullahazizidxb/Calc.git
