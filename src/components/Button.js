@@ -1,17 +1,6 @@
 import { useContext } from "react";
 import { CalcContext } from '../context/CalcContext'
 
-// const getStyleName = btn => {
-//   const className = {
-//     '=': 'equals',
-//     'x': 'opt',
-//     '-': 'opt',
-//     '+': 'opt',
-//     '/': 'opt',
-//   }
-//   return className[btn]
-// }
-
 const getStyleName = btn => {
   const className = {
     '=': 'equals',
@@ -24,6 +13,17 @@ const getStyleName = btn => {
   return className[btn]
 }
 
+
+// Spoken names for keys whose glyph is ambiguous to screen readers.
+const ARIA_LABELS = {
+  '/': 'Divide',
+  'x': 'Multiply',
+  '-': 'Subtract',
+  '+': 'Add',
+  '=': 'Equals',
+  '.': 'Decimal point',
+  'C': 'Clear',
+}
 
 const Button = ({ value }) => {
   const { calc, setCalc } = useContext(CalcContext);
@@ -120,7 +120,14 @@ const Button = ({ value }) => {
   }
 
   return (
-    <button onClick={handleBtnClick} className={`${getStyleName(value)} button`}>{value}</button>
+    <button
+      type="button"
+      onClick={handleBtnClick}
+      className={`${getStyleName(value) ?? ''} button`.trim()}
+      aria-label={ARIA_LABELS[value]}
+    >
+      {value}
+    </button>
   )
 }
 

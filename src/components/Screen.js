@@ -6,7 +6,9 @@ const Screen = () => {
   const { calc } = useContext(CalcContext);
 
   return (
-    <Textfit className="screen" max={70}  mode="single">{calc.num ? calc.num : calc.res}</Textfit>
+    <div role="status" aria-live="polite" aria-label="Result">
+      <Textfit className="screen" max={64} mode="single">{calc.num ? calc.num : calc.res}</Textfit>
+    </div>
   )
 }
 

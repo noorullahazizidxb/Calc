@@ -1,4 +1,55 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
+
+/* Design tokens: light by default, dark follows the OS preference. */
+:root {
+  color-scheme: light dark;
+  --bg: #f4f7fb;
+  --surface: #ffffff;
+  --key: #eef2f7;
+  --key-hover: #e2e8f0;
+  --text: #0f172a;
+  --muted: #64748b;
+  --op: #f79505;
+  --op-hover: #e48600;
+  --op-text: #ffffff;
+  --equals: #2563eb;
+  --equals-hover: #1d4ed8;
+  --clear: #10b981;
+  --clear-hover: #059669;
+  --ring: #2563eb;
+  --shadow: 0 24px 48px -24px rgba(15, 23, 42, 0.25), 0 2px 6px rgba(15, 23, 42, 0.06);
+  --radius-card: 1.5rem;
+  --radius-key: 0.875rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b1020;
+    --surface: #141a2e;
+    --key: #1e2640;
+    --key-hover: #27314f;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --op: rgba(249, 115, 22, 0.16);
+    --op-hover: rgba(249, 115, 22, 0.26);
+    --op-text: #fdba74;
+    --equals: #f97316;
+    --equals-hover: #ea580c;
+    --ring: #f97316;
+    --shadow: 0 24px 48px -24px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  }
+}
+
+@supports (corner-shape: squircle) {
+  :root {
+    --radius-card: 2.25rem;
+    --radius-key: 1.25rem;
+  }
+  .wrapper,
+  .button {
+    corner-shape: squircle;
+  }
+}
 
 * {
   margin: 0;
@@ -6,60 +57,118 @@
   box-sizing: border-box;
 }
 
-/* codes for the comment */
-
 body {
-  height: 100vh;
-  background: #f4fefe;
+  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Roboto', sans-serif;
+  padding: 1rem;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.screen {
-  height: 4rem;
-  margin-bottom: 4rem;
+#root {
+  width: min(22rem, 100%);
 }
 
 .wrapper {
-  background: #f6f8f9;
-  width: 20rem;
-  padding: 2rem;
-  margin-top: 4rem;
-  border-radius: 1rem;
-  box-shadow: 0px 9px 15px -3px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  padding: clamp(1.25rem, 5vw, 2rem);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.screen {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  height: 5.5rem;
+  margin-bottom: 1.5rem;
+  padding: 0 0.25rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 400;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .buttonBox {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: .5rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.625rem;
 }
 
 .button {
-  background: #e9f0f4;
-  height: 3.5rem;
-  padding: 10px;
-  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  color: #242424;
+  height: 3.75rem;
   border: none;
+  border-radius: var(--radius-key);
+  background: var(--key);
+  color: var(--text);
+  font: inherit;
   font-size: 1.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  transition: background-color 150ms ease, transform 120ms ease, box-shadow 150ms ease;
 }
 
 .button:hover {
-  border: 2px dotted #242424;
+  background: var(--key-hover);
 }
 
-.clear {
-  background: #4bd086;
-  grid-column: 1/5;
+.button:active {
+  transform: scale(0.96);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
 }
 
 .opt {
-  background: #f79505;
+  background: var(--op);
+  color: var(--op-text);
+}
+
+.opt:hover {
+  background: var(--op-hover);
+}
+
+.equals {
+  background: var(--equals);
+  color: #ffffff;
+}
+
+.equals:hover {
+  background: var(--equals-hover);
+}
+
+.clear {
+  grid-column: 1 / -1;
+  background: var(--clear);
+  color: #ffffff;
+  font-size: 1.125rem;
+  letter-spacing: 0.04em;
+}
+
+.clear:hover {
+  background: var(--clear-hover);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button {
+    transition: none;
+  }
+  .button:active {
+    transform: none;
+  }
 }
