@@ -1,133 +1,34 @@
-import { useContext } from "react";
-import { CalcContext } from '../context/CalcContext'
-
-const getStyleName = btn => {
-  const className = {
-    '=': 'equals',
-    'C': 'clear',
-    'x': 'opt',
-    '-': 'opt',
-    '+': 'opt',
-    '/': 'opt',
-  }
-  return className[btn]
-}
-
-
-// Spoken names for keys whose glyph is ambiguous to screen readers.
-const ARIA_LABELS = {
-  '/': 'Divide',
-  'x': 'Multiply',
-  '-': 'Subtract',
-  '+': 'Add',
-  '=': 'Equals',
-  '.': 'Decimal point',
-  'C': 'Clear',
-}
+import { useContext, useEffect, useRef } from "react"
+import { m, useAnimationControls } from "framer-motion"
+import { CalcContext } from "../context/CalcContext"
+import { ARIA_LABELS, KEY_VARIANTS, glyphFor } from "../logic/keys"
+import { SPRING, keyEcho, keyTap, keyVariants } from "../motion/tokens"
 
 const Button = ({ value }) => {
-  const { calc, setCalc } = useContext(CalcContext);
+  const { press, keyboardPress } = useContext(CalcContext);
+  const controls = useAnimationControls();
+  const lastEchoId = useRef(keyboardPress.id);
 
-  // User click comma
-  const commaClick = () => {
-    setCalc({
-      ...calc,
-      num: !calc.num.toString().includes('.') ? calc.num + value : calc.num
-    });
-  }
-  // User click C
-  const resetClick = () => {
-    setCalc({ sign: '', num: 0, res: 0 })
-  }
-  // User click number
-  const handleClickButton = () => {
-    const numberString = value.toString()
-
-    let numberValue;
-    if (numberString === '0' && calc.num === 0) {
-      numberValue = "0"
-    } else {
-      numberValue = Number(calc.num + numberString)
-    }
-
-    setCalc({
-      ...calc,
-      num: numberValue
-    })
-  }
-  // User click operation
-  const signClick = () => {
-    setCalc({
-      sign: value,
-      res: !calc.res && calc.num ? calc.num : calc.res,
-      num: 0
-    })
-  }
-  // User click equals
-  const equalsClick = () => {
-    if (calc.res && calc.num) {
-      const math = (a, b, sign) => {
-        const result = {
-          '+': (a, b) => a + b,
-          '-': (a, b) => a - b,
-          'x': (a, b) => a * b,
-          '/': (a, b) => a / b,
-        }
-        return result[sign](a, b);
-      }
-      setCalc({
-        res: math(calc.res, calc.num, calc.sign),
-        sign: '',
-        num: 0
-      })
-    }
-  }
-  // User click persen
-  const persenClick = () => {
-    setCalc({
-      num: (calc.num / 100),
-      res: (calc.res / 100),
-      sign: ''
-    })
-  }
-  // User click invert button
-  const invertClick = () => {
-    setCalc({
-      num: calc.num ? calc.num * -1 : 0,
-      res: calc.res ? calc.res * -1 : 0,
-      sign: ''
-    })
-  }
-
-  const handleBtnClick = () => {
-
-    const results = {
-      '.': commaClick,
-      'C': resetClick,
-      '/': signClick,
-      'x': signClick,
-      '-': signClick,
-      '+': signClick,
-      '=': equalsClick,
-      '%': persenClick,
-      '+-': invertClick
-    }
-    if (results[value]) {
-      return results[value]()
-    } else {
-      return handleClickButton()
-    }
-  }
+  useEffect(() => {
+    if (keyboardPress.id === lastEchoId.current) return;
+    lastEchoId.current = keyboardPress.id;
+    if (keyboardPress.key === value) controls.start(keyEcho);
+  }, [keyboardPress, value, controls]);
 
   return (
-    <button
-      type="button"
-      onClick={handleBtnClick}
-      className={`${getStyleName(value) ?? ''} button`.trim()}
-      aria-label={ARIA_LABELS[value]}
-    >
-      {value}
-    </button>
+    <m.div className={`keySlot ${KEY_VARIANTS[value] === 'clear' ? 'keySlot--wide' : ''}`.trim()} variants={keyVariants}>
+      <m.button
+        type="button"
+        onClick={() => press(value)}
+        className={`${KEY_VARIANTS[value] ?? ''} button`.trim()}
+        aria-label={ARIA_LABELS[value]}
+        animate={controls}
+        whileTap={keyTap}
+        transition={SPRING.press}
+      >
+        {glyphFor(value)}
+      </m.button>
+    </m.div>
   )
 }
 

@@ -1,43 +1,41 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
 
-/* Design tokens: light by default, dark follows the OS preference. */
+/*
+ * Design tokens. Each colour is light-dark(light, dark): the OS preference
+ * decides by default and <html data-theme> pins a choice from the theme switcher.
+ */
 :root {
   color-scheme: light dark;
-  --bg: #f4f7fb;
-  --surface: #ffffff;
-  --key: #eef2f7;
-  --key-hover: #e2e8f0;
-  --text: #0f172a;
-  --muted: #64748b;
-  --op: #f79505;
-  --op-hover: #e48600;
-  --op-text: #ffffff;
-  --equals: #2563eb;
-  --equals-hover: #1d4ed8;
-  --clear: #10b981;
-  --clear-hover: #059669;
-  --ring: #2563eb;
-  --shadow: 0 24px 48px -24px rgba(15, 23, 42, 0.25), 0 2px 6px rgba(15, 23, 42, 0.06);
+  --bg: light-dark(#f4f7fb, #0b1020);
+  --surface: light-dark(#ffffff, #141a2e);
+  --key: light-dark(#eef2f7, #1e2640);
+  --key-hover: light-dark(#e2e8f0, #27314f);
+  --text: light-dark(#0f172a, #f1f5f9);
+  --muted: light-dark(#64748b, #94a3b8);
+  --op: light-dark(rgba(247, 149, 5, 0.16), rgba(249, 115, 22, 0.16));
+  --op-hover: light-dark(rgba(247, 149, 5, 0.26), rgba(249, 115, 22, 0.26));
+  --op-text: light-dark(#b45309, #fdba74);
+  --equals: light-dark(#2563eb, #ea580c);
+  --equals-hover: light-dark(#1d4ed8, #c2410c);
+  --clear: #047857;
+  --clear-hover: #065f46;
+  --ring: light-dark(#2563eb, #f97316);
+  --edge: light-dark(rgba(15, 23, 42, 0.05), rgba(255, 255, 255, 0.06));
+  --shadow-drop: light-dark(rgba(15, 23, 42, 0.25), rgba(0, 0, 0, 0.6));
+  --shadow: 0 24px 48px -24px var(--shadow-drop), 0 0 0 1px var(--edge);
+  --indicator: light-dark(#ffffff, #33406a);
+  --indicator-shadow: 0 1px 3px light-dark(rgba(15, 23, 42, 0.14), rgba(0, 0, 0, 0.5));
   --radius-card: 1.5rem;
   --radius-key: 0.875rem;
+  --theme-fade: background-color 200ms ease, color 200ms ease, box-shadow 200ms ease;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0b1020;
-    --surface: #141a2e;
-    --key: #1e2640;
-    --key-hover: #27314f;
-    --text: #f1f5f9;
-    --muted: #94a3b8;
-    --op: rgba(249, 115, 22, 0.16);
-    --op-hover: rgba(249, 115, 22, 0.26);
-    --op-text: #fdba74;
-    --equals: #f97316;
-    --equals-hover: #ea580c;
-    --ring: #f97316;
-    --shadow: 0 24px 48px -24px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
-  }
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
 }
 
 @supports (corner-shape: squircle) {
@@ -69,6 +67,7 @@ body {
   font-family: 'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
+  transition: var(--theme-fade);
 }
 
 #root {
@@ -81,6 +80,97 @@ body {
   border-radius: var(--radius-card);
   background: var(--surface);
   box-shadow: var(--shadow);
+  transition: var(--theme-fade);
+}
+
+/* Toolbar: app title and theme switcher. */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.title {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.themeSwitcher {
+  display: inline-flex;
+  padding: 0.1875rem;
+  border-radius: 999px;
+  background: var(--key);
+  transition: var(--theme-fade);
+}
+
+.themeOption {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: color 200ms ease;
+}
+
+.themeOption:hover,
+.themeOption[aria-pressed='true'] {
+  color: var(--text);
+}
+
+.themeOption:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 1px;
+}
+
+.themeOption svg {
+  position: relative;
+  width: 1.125rem;
+  height: 1.125rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.themeIndicator {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--indicator);
+  box-shadow: var(--indicator-shadow);
+}
+
+/* Display: pending expression above the current value. */
+.display {
+  margin-bottom: 1.5rem;
+}
+
+.expression {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  height: 1.5rem;
+  padding: 0 0.25rem;
+  color: var(--muted);
+  font-size: 1.125rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.expressionText {
+  display: inline-block;
 }
 
 .screen {
@@ -88,7 +178,6 @@ body {
   align-items: flex-end;
   justify-content: flex-end;
   height: 5.5rem;
-  margin-bottom: 1.5rem;
   padding: 0 0.25rem;
   font-variant-numeric: tabular-nums;
   font-weight: 400;
@@ -97,14 +186,28 @@ body {
   overflow: hidden;
 }
 
+.screenValue {
+  display: inline-block;
+}
+
+/* Keypad */
 .buttonBox {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.625rem;
 }
 
+.keySlot {
+  display: flex;
+}
+
+.keySlot--wide {
+  grid-column: 1 / -1;
+}
+
 .button {
   display: flex;
+  flex: 1;
   align-items: center;
   justify-content: center;
   height: 3.75rem;
@@ -118,15 +221,11 @@ body {
   cursor: pointer;
   user-select: none;
   touch-action: manipulation;
-  transition: background-color 150ms ease, transform 120ms ease, box-shadow 150ms ease;
+  transition: var(--theme-fade);
 }
 
 .button:hover {
   background: var(--key-hover);
-}
-
-.button:active {
-  transform: scale(0.96);
 }
 
 .button:focus-visible {
@@ -153,7 +252,6 @@ body {
 }
 
 .clear {
-  grid-column: 1 / -1;
   background: var(--clear);
   color: #ffffff;
   font-size: 1.125rem;
@@ -164,11 +262,26 @@ body {
   background: var(--clear-hover);
 }
 
+.hint {
+  margin-top: 1rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .hint {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  body,
+  .wrapper,
+  .themeSwitcher,
+  .themeOption,
   .button {
     transition: none;
-  }
-  .button:active {
-    transform: none;
   }
 }
