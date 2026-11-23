@@ -1,7 +1,16 @@
+import { m } from "framer-motion"
+import { keypadVariants } from "../motion/tokens"
 
 const ButtonBox = ({ children }) => {
   return (
-    <div className="buttonBox">{children}</div>
+    <m.div
+      className="buttonBox"
+      variants={keypadVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      {children}
+    </m.div>
   )
 }
 
